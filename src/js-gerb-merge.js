@@ -9,6 +9,7 @@ function fixDownload() {
     } catch(e) {
         blobLink.innerHTML += " (not supported on this browser)";
     }
+    return true;
 }
 
 function handleFileSelect(evt) {
@@ -23,7 +24,6 @@ function handleFileSelect(evt) {
             return function(e) {
                 var bin = e.target.result;
                 zip.file(theFile.name,bin);
-                fixDownload();
             }
         })(f);
         reader.readAsArrayBuffer(f);
@@ -33,6 +33,7 @@ function handleFileSelect(evt) {
 window.onload = function () {
     fixDownload();
     document.getElementById('files').addEventListener('change', handleFileSelect, false);
+    document.getElementById('blob').onclick = fixDownload;
 };
 
 

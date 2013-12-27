@@ -4,10 +4,14 @@ var jspcb = (function() {
         // gerbers is a list of files that describe the pcb. 
         // example: [ ['board.gtl','<contents of board.gtl>'], ['board.gbl','<contents of board.gbl>'] ]
         var gerbs = gerbers;
-        // TODO: get x and y from the edge cuts layer of the gerbers
+
+        // TODO: get x, y and name from the gerbers
         this.x = 10;
         this.y = 10;
+        this.name = "PCB";
+
         this.rotation = 0;
+
         this.getGerbers = function() {
             // TODO: return list of modified gerbers along with their contents
             return gerbs;

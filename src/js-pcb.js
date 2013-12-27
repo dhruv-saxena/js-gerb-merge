@@ -10,11 +10,15 @@ var jspcb = (function() {
         this.rotation = 0;
         this.getGerbers = function() {
             // TODO: return list of modified gerbers along with their contents
-            return [ ['board.gtl','TODO-gtl'], ['board.gbl','TODO-gbl'] ];
+            return gerbs;
         }
         this.addpcb = function(pcb) {
             // TODO: merge all the PCBs in the argument list and return the merged PCB
             return new PCB();
+        }
+        this.getBoundary = function() {
+            // TODO: return a list of vertices that describes the boundary
+            return [ [0,0] , [1,0] , [1,2] , [0,2] ];
         }
     }
 

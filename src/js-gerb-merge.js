@@ -33,7 +33,9 @@
             reader.onload = (function(theFile) {
                 return function(e) {
                     var bin = e.target.result;
-                    pcb.addGerber([theFile.name, bin]);
+                    // The following code line assumes english only ASCII. To support other characters, different encoding is needed. 
+                    var str = String.fromCharCode.apply(null, new Uint8Array(bin)); // convert array buffer to string
+                    pcb.addGerber([theFile.name, str]);
                 }
             })(f);
             reader.readAsArrayBuffer(f);

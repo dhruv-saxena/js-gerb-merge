@@ -6,10 +6,11 @@ var jspcb = (function() {
         var gerbs = gerbers;
         
         // give some random initial offset to reduce the chances of all the pcbs co-inciding
-        this.dx = Math.floor(Math.random()*20);
-        this.dy = Math.floor(Math.random()*20);
-
-        this.name = "PCB";
+        this.dx = Math.floor(Math.random()*50);
+        this.dy = Math.floor(Math.random()*50);
+        
+        // TODO: use some heuristic to get PCB name from the gerbers
+        this.name = "PCB"+Math.floor(Math.random()*100000).toString(); // random name for PCB
 
         this.rotation = 0;
 

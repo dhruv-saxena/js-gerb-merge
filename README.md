@@ -1,7 +1,7 @@
 js-gerb-merge
 =============
 
-Merge gerbers and panelize PCBs in your browser. This project is on-going and not yet in a usable state.
+Merge gerbers and panelize PCBs in your browser. This project is on-going and not yet in a usable state. If you want to use this, clone the repo and open js-gerb-merge.html in Firefox/Chrome.
 
 Libraries used
 --------------

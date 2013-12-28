@@ -1,30 +1,30 @@
-//(function() {
+(function() {
     var pcbs = [];
     var paper;
     
-    var start = function () {
+    var dragstart = function () {
         this.dx_start = this.pcb.dx; // keep record of initial(at the start of drag) PCB offset
         this.dy_start = this.pcb.dy;
         this.labelx = this.label.attr("x"); // record of initial(at the start of drag) label position
         this.labely = this.label.attr("y");
         this.attr({stroke: '#000'});
     };
-    var move = function (dx, dy) {
+    var dragmove = function (dx, dy) {
         this.pcb.dx = this.dx_start + dx;
         this.pcb.dy = this.dy_start + dy;
         this.attr({path: 'M'+this.pcb.getBoundary().toString()+'Z'}); // move PCB outline
         this.label.attr({x: this.labelx + dx, y: this.labely + dy}); // move label
     };
-    var up = function () {
+    var dragstop = function () {
         this.attr({stroke: '#ddd'});
     };
 
     var addPCBtoUI = function(pcb) {
         var polygonpoints = pcb.getBoundary();
         var polygonstring = 'M'+polygonpoints.toString()+'Z';
-        polygon = paper.path(polygonstring);
+        var polygon = paper.path(polygonstring);
         polygon.attr({fill: '#9cf', stroke: '#ddd', 'stroke-width': 2});
-        polygon.drag(move,start,up);
+        polygon.drag(dragmove,dragstart,dragstop);
         polygon.pcb = pcb;
         var label = paper.text(polygonpoints[0][0]+30,polygonpoints[0][1]+10,pcb.name); // add PCB name near the left top 
         polygon.label = label;
@@ -90,4 +90,4 @@
         
     };
 
-//}());
+}());

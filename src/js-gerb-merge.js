@@ -3,16 +3,14 @@
     var paper;
     
     var start = function () {
-        this.startpath = this.attr("path").slice(0);
+        this.dx_start = this.pcb.dx;
+        this.dy_start = this.pcb.dy;
         this.attr({stroke: '#000'});
     };
     var move = function (dx, dy) {
-        var path = this.attr("path")
-        for(var i=0; i < path.length - 1; i++) {
-            path[i][1] = this.startpath[i][1] + dx;
-            path[i][2] = this.startpath[i][2] + dy;
-        }
-        this.attr({path: path});
+        this.pcb.dx = this.dx_start + dx;
+        this.pcb.dy = this.dy_start + dy;
+        this.attr({path: 'M'+this.pcb.getBoundary().toString()+'Z'});
     };
     var up = function () {
         this.attr({stroke: '#ddd'});
@@ -23,7 +21,8 @@
         polygonstring = 'M'+polygonpoints.toString()+'Z';
         polygon = paper.path(polygonstring);
         polygon.attr({fill: '#9cf', stroke: '#ddd', 'stroke-width': 2});
-        polygon.drag(move,start,up); 
+        polygon.drag(move,start,up);
+        polygon.pcb = pcb;
     };
 
     function fixDownload() {

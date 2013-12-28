@@ -31,10 +31,10 @@
     };
 
     function fixDownload() {
-        var blobLink = document.getElementById('blob');
+        var blobLink = $('#blob').get(0);
         try {
             if(pcbs.length > 0) {
-                blobLink.download = "hello.zip";
+                blobLink.download = "merged.zip";
                 var zip = new JSZip();
                 var bigpcb = pcbs[0];                 
                 for(i=1; i < pcbs.length; i++) {
@@ -47,7 +47,7 @@
                 blobLink.href = window.URL.createObjectURL(zip.generate({type:"blob"}));
             }
         } catch(e) {
-            blobLink.innerHTML += " (not supported on this browser)";
+            blobLink.innerHTML += " (Error ! Refresh the page and try again or try with a different browser)";
         }
         return true;
     }
@@ -81,13 +81,11 @@
         }
     }
 
-    window.onload = function () {
+    $(function () {
         fixDownload();
-        document.getElementById('files').addEventListener('change', handleFileSelect, false);
-        document.getElementById('blob').onclick = fixDownload;
-
-        paper = new Raphael(document.getElementById('canvas_container'),1920,1080);
-        
-    };
+        $("#files").change(handleFileSelect);
+		$("#blob").click(fixDownload);
+        paper = new Raphael($('#canvas_container').get(0),1920,1080);
+    });
 
 }());

@@ -46,6 +46,7 @@
         fixDownload();
         document.getElementById('files').addEventListener('change', handleFileSelect, false);
         document.getElementById('blob').onclick = fixDownload;
+        var paper = new Raphael(document.getElementById('canvas_container'),1920,1080);
     };
 
 }());

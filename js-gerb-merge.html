@@ -6,8 +6,10 @@
     <title>js-gerb-merge</title>
     <script src="libs/jquery-1.10.2.min.js"></script>
     <script src="libs/jszip.min.js"></script>
+    <script src="libs/raphael-min.js"></script>
     <script src="src/js-gerb-merge.js"></script>
     <script src="src/js-pcb.js"></script>
+    <link rel="stylesheet" type="text/css" href="js-gerb-merge.css">
 </head>
 
 <body>
@@ -19,8 +21,7 @@
     </div>
 
     <input type="file" id="files" name="files[]" multiple />
-    <output id="list"></output>
-
+    <div id="canvas_container"></div>  
 </body>
 
 </html>

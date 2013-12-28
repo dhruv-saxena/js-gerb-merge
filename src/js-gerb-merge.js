@@ -18,6 +18,12 @@
     var dragstop = function () {
         this.attr({stroke: '#ddd'});
     };
+    var rotate = function() {
+        this.pcb.rotation += 90;
+        this.attr({path: 'M'+this.pcb.getBoundary().toString()+'Z'}); // move PCB outline
+        var centre = this.pcb.getCentroid();
+        this.label.attr({x: centre[0], y: centre[1]});
+    };
 
     var addPCBtoUI = function(pcb) {
         var polygonpoints = pcb.getBoundary();
@@ -26,7 +32,9 @@
         polygon.attr({fill: '#9cf', stroke: '#ddd', 'stroke-width': 2});
         polygon.drag(dragmove,dragstart,dragstop);
         polygon.pcb = pcb;
-        var label = paper.text(polygonpoints[0][0]+30,polygonpoints[0][1]+10,pcb.name); // add PCB name near the left top 
+        polygon.dblclick(rotate);
+        var centre = pcb.getCentroid();
+        var label = paper.text(centre[0],centre[1],pcb.name); // add PCB name near the left top 
         polygon.label = label;
     };
 

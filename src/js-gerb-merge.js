@@ -1,4 +1,4 @@
-//(function() {
+(function() {
     var pcbs = [];
 
     function fixDownload() {
@@ -7,8 +7,10 @@
             if(pcbs.length > 0) {
                 blobLink.download = "hello.zip";
                 var zip = new JSZip();
-                zip.file("hi.txt", "Hello world !!!\n");
-                var bigpcb = pcbs[0]; // TODO: merge all pcbs in pcbs to get bigpcb
+                var bigpcb = pcbs[0];                 
+                for(i=1; i < pcbs.length; i++) {
+                    bigpcb = bigpcb.addpcb(pcbs[i]);
+                }
                 var gerbs = bigpcb.getGerbers();
                 for(var i=0; i < gerbs.length; i++) {
                     zip.file(gerbs[i][0],gerbs[i][1]);
@@ -44,4 +46,4 @@
         document.getElementById('blob').onclick = fixDownload;
     };
 
-//}());
+}());

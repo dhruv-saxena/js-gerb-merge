@@ -3,6 +3,7 @@ var jspcb = (function() {
         // returns an object representing the PCB
         // gerbers is a list of files that describe the pcb. 
         // example: [ ['board.gtl','<contents of board.gtl>'], ['board.gbl','<contents of board.gbl>'] ]
+        // <contents> is an ArrayBuffer object
         var gerbs = gerbers;
 
         // TODO: get x, y and name from the gerbers

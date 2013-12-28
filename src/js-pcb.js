@@ -4,9 +4,11 @@ var jspcb = (function() {
         // gerbers is a list of files that describe the pcb. 
         // example: [ ['board.gtl','<contents of board.gtl>'], ['board.gbl','<contents of board.gbl>'] ]
         var gerbs = gerbers;
+        
+        // give some random initial offset to reduce the chances of all the pcbs co-inciding
+        this.dx = Math.floor(Math.random()*20);
+        this.dy = Math.floor(Math.random()*20);
 
-        this.dx = 0;
-        this.dy = 0;
         this.name = "PCB";
 
         this.rotation = 0;
@@ -19,9 +21,14 @@ var jspcb = (function() {
             // TODO: merge all the PCBs in the argument list and return the merged PCB
             return this;
         }
-        this.getInitBoundary = function() {
-            // TODO: return a list of vertices that describes the boundary
-            return [ [0,0] , [100,0] , [100,200] , [0,200] ];
+        this.getBoundary = function() {
+            // TODO: arr should be a list of vertices that describes the boundary
+            var arr = [ [0,0] , [100,0] , [100,200] , [0,200] ];
+            for(i=0;i < arr.length; i++) {
+                arr[i][0] += this.dx;
+                arr[i][1] += this.dy;
+            }
+            return arr;
         }
     }
 

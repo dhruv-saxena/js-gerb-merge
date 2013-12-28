@@ -19,6 +19,11 @@
     };
 
     var addPCBtoUI = function(pcb) {
+        var polygonpoints = pcb.getBoundary();
+        polygonstring = 'M'+polygonpoints.toString()+'Z';
+        polygon = paper.path(polygonstring);
+        polygon.attr({fill: '#9cf', stroke: '#ddd', 'stroke-width': 2});
+        polygon.drag(move,start,up); 
     };
 
     function fixDownload() {
@@ -54,6 +59,7 @@
                 // all gerbers read, now construct PCB
                 var pcb = new jspcb.PCB(gerbs);
                 pcbs.push(pcb);
+                addPCBtoUI(pcb);
             }
         };
         // files is a FileList of File objects. List some properties.
@@ -77,10 +83,7 @@
         document.getElementById('blob').onclick = fixDownload;
 
         paper = new Raphael(document.getElementById('canvas_container'),1920,1080);
-
-        polygon = paper.path('M 50 0 L 100 100 L 0 100 Z');
-        polygon.attr({fill: '#9cf', stroke: '#ddd', 'stroke-width': 2});
-        polygon.drag(move,start,up);
+        
     };
 
 //}());

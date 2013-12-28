@@ -8,3 +8,4 @@ Libraries used
 
 - jQuery 1.10.2
 - JSZip 2.0.0
+- Raphael 2.1.2

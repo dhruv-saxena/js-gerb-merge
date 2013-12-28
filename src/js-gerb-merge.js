@@ -1,4 +1,4 @@
-(function() {
+//(function() {
     var pcbs = [];
 
     function fixDownload() {
@@ -47,6 +47,41 @@
         document.getElementById('files').addEventListener('change', handleFileSelect, false);
         document.getElementById('blob').onclick = fixDownload;
         var paper = new Raphael(document.getElementById('canvas_container'),1920,1080);
+
+        var circle = paper.circle(100, 100, 25);
+        circle.attr({fill: '#9cf', stroke: '#ddd', 'stroke-width': 2});  
+        var start = function () {
+            this.ox = this.attr("cx");
+            this.oy = this.attr("cy");
+            this.attr({stroke: '#000'});
+        };
+        var move = function (dx, dy) {
+            this.attr({cx: this.ox + dx, cy: this.oy + dy});
+        };
+        var up = function () {
+            this.attr({stroke: '#ddd'});
+        };
+        circle.drag(move,start,up);
+        
+        var startp = function () {
+            this.startpath = this.attr("path").slice(0);
+            this.attr({stroke: '#000'});
+        };
+        var movep = function (dx, dy) {
+            var path = this.attr("path")
+            for(var i=0; i < path.length - 1; i++) {
+                path[i][1] = this.startpath[i][1] + dx;
+                path[i][2] = this.startpath[i][2] + dy;
+            }
+            this.attr({path: path});
+        };
+        var upp = function () {
+            this.attr({stroke: '#ddd'});
+        };
+
+        polygon = paper.path('M 50 0 L 100 100 L 0 100 Z');
+        polygon.attr({fill: '#9cf', stroke: '#ddd', 'stroke-width': 2});
+        polygon.drag(movep,startp,upp);
     };
 
-}());
+//}());

@@ -58,6 +58,8 @@ var jspcb = (function() {
         for(var i=0;i<boundary.length;i++) {
             arr[i] = [0,0];
         }
+        var origdx = this.dx;
+        var origdy = this.dy;
         
                 
         // TODO: use some heuristic to get PCB name from the gerbers
@@ -66,8 +68,32 @@ var jspcb = (function() {
         this.rotation = 0; // this is in degrees
 
         this.getGerbers = function() {
-            // TODO: return list of modified gerbers along with their contents
-            return gerbs;
+            // Translate and rotate the points in the gerber files and give it to the user
+            // TODO: Rotation. Currently doing only translation
+            var newgerbs = [];
+
+            var tx = (this.dx-origdx) * scale;
+            var ty = (this.dy-origdy) * scale;
+
+            for(var i=0;i < gerbs.length; i++) {
+                newgerbs[i] = ['d.txt',''];
+                newgerbs[i][0] = gerbs[i][0]; // keep the same file name
+                var content = gerbs[i][1];
+                var lines = content.split('\n');
+                for(var j=0; j < lines.length; j++) {
+                    var opline = lines[j];
+                    var m = re.exec(opline);
+                    if(m) {
+                        // We have a (X,Y) here. Translate it by modifying opline
+                        var newx = String(Number(m[1]) + tx);
+                        var newy = String(Number(m[2]) + ty);
+                        var repl = 'X'+newx+'Y'+newy;
+                        opline = opline.replace(re,repl);
+                    }
+                    newgerbs[i][1] += opline + '\n';
+                }
+            }
+            return newgerbs;
         }
         this.addpcb = function(pcb) {
             // TODO: merge all the PCBs in the argument list and return the merged PCB

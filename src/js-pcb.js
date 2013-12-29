@@ -5,17 +5,60 @@ var jspcb = (function() {
         // example: [ ['board.gtl','<contents of board.gtl>'], ['board.gbl','<contents of board.gbl>'] ]
         var gerbs = gerbers;
 
+        // give some random initial offset to reduce the chances of all the pcbs co-inciding
+        this.dx = Math.floor(Math.random()*50);
+        this.dy = Math.floor(Math.random()*50);
+
         // TODO: boundary should be a list of vertices that describes the boundary as in the gerber
-        var boundary = [ [0,0] , [100,0] , [100,200] , [0,200] ];
+        var boundary = [ [0,0] , [0,0] , [0,0] , [0,0] ];
+
+        // TODO: infer the appropriate scale from the gerber
+        var scale = 100;
+
+        var xmin = Number.POSITIVE_INFINITY;
+        var ymin = Number.POSITIVE_INFINITY;
+        var xmax = Number.NEGATIVE_INFINITY;
+        var ymax = Number.NEGATIVE_INFINITY;
+        var re = /^X(-?\d+)Y(-?\d+)/;
+        for(var i=0; i < gerbs.length; i++) {
+            var str = gerbs[i][1];
+            var lines = str.split('\n');
+            for(var j=0; j < lines.length; j++) {
+                var m = re.exec(lines[j]);
+                if(m) {
+                    var x = Number(m[1]);
+                    var y = Number(m[2]);
+                    if(x < xmin) {
+                        xmin = x;
+                    }
+                    if(x > xmax) {
+                        xmax = x;
+                    }
+                    if(y < ymin) {
+                        ymin = y;
+                    }
+                    if(y > ymax) {
+                        ymax = y;
+                    }
+                }
+            }
+        }
+        boundary = [ [xmin/scale,ymin/scale] , [xmax/scale,ymin/scale], [xmax/scale,ymax/scale], [xmin/scale,ymax/scale] ];
+        
+        // get it into the display
+        if(boundary[0][0] < 0) {
+            this.dx += -boundary[0][0];
+        }
+        if(boundary[0][1] < 0) {
+            this.dy += -boundary[0][1];
+        }
+
         var arr = []; // pre-prepping an array for boundary seems to give a small speedup
         for(var i=0;i<boundary.length;i++) {
             arr[i] = [0,0];
         }
         
-        // give some random initial offset to reduce the chances of all the pcbs co-inciding
-        this.dx = Math.floor(Math.random()*50);
-        this.dy = Math.floor(Math.random()*50);
-        
+                
         // TODO: use some heuristic to get PCB name from the gerbers
         this.name = "PCB"+Math.floor(Math.random()*100000).toString(); // random name for PCB
 

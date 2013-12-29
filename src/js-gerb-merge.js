@@ -69,9 +69,13 @@
             gerbs.push(gerber);
             if(nFilesRead == files.length) {
                 // all gerbers read, now construct PCB
-                var pcb = new jspcb.PCB(gerbs);
-                pcbs.push(pcb);
-                addPCBtoUI(pcb);
+                try {
+                    var pcb = new jspcb.PCB(gerbs);
+                    pcbs.push(pcb);
+                    addPCBtoUI(pcb);
+                } catch(e) {
+                    // TODO: Error message
+                }
             }
         };
         // files is a FileList of File objects. List some properties.

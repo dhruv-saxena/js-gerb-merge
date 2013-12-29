@@ -21,7 +21,7 @@
     var rotate = function() {
         this.pcb.rotation += 90;
         this.attr({path: 'M'+this.pcb.getBoundary().toString()+'Z'}); // move PCB outline
-        var centre = this.pcb.getCentroid();
+        var centre = this.pcb.getTranslatedCentroid();
         this.label.attr({x: centre[0], y: centre[1]});
     };
 
@@ -33,7 +33,7 @@
         polygon.drag(dragmove,dragstart,dragstop);
         polygon.pcb = pcb;
         polygon.dblclick(rotate);
-        var centre = pcb.getCentroid();
+        var centre = pcb.getTranslatedCentroid();
         var label = paper.text(centre[0],centre[1],pcb.name); // add PCB name near the left top 
         polygon.label = label;
     };

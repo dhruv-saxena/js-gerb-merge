@@ -9,12 +9,13 @@ var jspcb = (function() {
         this.dx = Math.floor(Math.random()*50);
         this.dy = Math.floor(Math.random()*50);
 
-        // TODO: boundary should be a list of vertices that describes the boundary as in the gerber
+        // boundary should be a list of vertices that describes the boundary as in the gerber
         var boundary = [ [0,0] , [0,0] , [0,0] , [0,0] ];
 
         // TODO: infer the appropriate scale from the gerber
-        var scale = 100;
-
+        var scale = 250;
+        
+        // Boundary detection algorithm. Find the extreme (X,Y) locations marked in the gerber
         var xmin = Number.POSITIVE_INFINITY;
         var ymin = Number.POSITIVE_INFINITY;
         var xmax = Number.NEGATIVE_INFINITY;

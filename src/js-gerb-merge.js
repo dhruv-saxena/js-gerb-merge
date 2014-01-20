@@ -10,6 +10,8 @@
         this.attr({stroke: '#000'});
     };
     var dragmove = function (dx, dy) {
+        var dx = paper.scale * dx;
+        var dy = paper.scale * dy;
         this.pcb.dx = this.dx_start + dx;
         this.pcb.dy = this.dy_start + dy;
         this.attr({path: 'M'+this.pcb.getBoundary().toString()+'Z'}); // move PCB outline
@@ -23,6 +25,11 @@
         this.attr({path: 'M'+this.pcb.getBoundary().toString()+'Z'}); // move PCB outline
         var centre = this.pcb.getTranslatedCentroid();
         this.label.attr({x: centre[0], y: centre[1]});
+    };
+    var mousewheel = function(event, delta) {
+        paper.scale *= delta > 0 ? 0.8 : 1.2;
+        paper.setViewBox(0,0, paper.width * paper.scale, paper.height * paper.scale, false);
+        dd = paper;
     };
 
     var addPCBtoUI = function(pcb) {
@@ -97,7 +104,9 @@
         fixDownload();
         $("#files").change(handleFileSelect);
 		$("#blob").click(fixDownload);
-        paper = new Raphael($('#canvas_container').get(0),1920,1080);
+        paper = new Raphael('canvas_container', 10000, 5000); // units = mm
+        paper.scale = 1.0;
+        $("#canvas_container").bind('mousewheel', mousewheel);
     });
 
 }());

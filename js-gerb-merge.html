@@ -9,21 +9,22 @@
     <script src="libs/jquery-1.10.2.min.js"></script>
     <script src="libs/jszip.min.js"></script>
     <script src="libs/raphael-min.js"></script>
+    <script src="libs/jquery.mousewheel.js"></script>
+
     <script src="src/js-gerb-merge.js"></script>
     <script src="src/js-pcb.js"></script>
-    <link rel="stylesheet" type="text/css" href="js-gerb-merge.css">
+
+    <link rel="stylesheet" type="text/css" href="src/js-gerb-merge.css">
 </head>
 
 <body>
-    <h1>js-gerb-merge</h1>
-    <p>Javascript based gerber merger. Use the latest Firefox or Chrome web browser. This tool may not work in IE. </p>
-    <p>Left click and drag to move the PCB. Double click to rotate the PCB</p>
-
     <div>
-        <a href="#" id="blob">click to download</a>
+        Left click and drag to move the PCB. Double click to rotate the PCB. <br />
+        Select all gerbers and drill files for the PCB.
+        <input type="file" id="files" name="files[]" multiple /><br />
+        <a href="#" id="blob">Download merged gerbers</a>
     </div>
 
-    <input type="file" id="files" name="files[]" multiple />
     <div id="canvas_container"></div>  
 </body>
 

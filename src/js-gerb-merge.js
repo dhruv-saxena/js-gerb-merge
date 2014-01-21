@@ -1,5 +1,5 @@
 (function() {
-    var pcbs = [];
+    pcbs = [];
     var paper;
     
     var dragstart = function () {
@@ -44,6 +44,22 @@
         var h1 = h0 * scale;
         paper.viewbox = [x1, y1, w1, h1];
         // apply the viewbox
+        paper.scale *= scale;
+        paper.setViewBox.apply(paper, paper.viewbox);
+    };
+    var zoomtofit = function(e) {
+        var EXTRA_FACTOR = 1.1;
+        var xmin = Math.min.apply(Math, pcbs.map(function(pcb) { return pcb.getBoundary()[0][0]}));
+        var xmax = Math.max.apply(Math, pcbs.map(function(pcb) { return pcb.getBoundary()[2][0]}));
+        var ymin = Math.min.apply(Math, pcbs.map(function(pcb) { return pcb.getBoundary()[0][1]}));
+        var ymax = Math.max.apply(Math, pcbs.map(function(pcb) { return pcb.getBoundary()[2][1]}));
+        var wtarg = EXTRA_FACTOR * (paper.width/window.innerWidth) * (xmax - xmin); // target width
+        var htarg = EXTRA_FACTOR * (paper.height/(window.innerHeight - $("#canvas_container").offset().top)) * (ymax - ymin); // target height
+        var w0 = paper.viewbox[2]; // current width
+        var h0 = paper.viewbox[3]; // current height
+        var scale = Math.max.apply(Math, [wtarg*1.0/w0, htarg*1.0/h0]); // chose scale while maintaining aspect ratio
+        // new viewbox
+        paper.viewbox = [xmin, ymin, w0 * scale , h0 * scale];
         paper.scale *= scale;
         paper.setViewBox.apply(paper, paper.viewbox);
     };
@@ -127,6 +143,7 @@
         paper.viewbox = [0, 0, w, h];
         paper.setViewBox.apply(paper, paper.viewbox);
         $("#canvas_container").bind('mousewheel', mousewheel);
+        $("#zoomtofit").bind("click", zoomtofit);
     });
 
 }());

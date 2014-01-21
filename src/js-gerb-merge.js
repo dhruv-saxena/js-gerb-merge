@@ -49,10 +49,15 @@
     };
     var zoomtofit = function(e) {
         var EXTRA_FACTOR = 1.1;
-        var xmin = Math.min.apply(Math, pcbs.map(function(pcb) { return pcb.getBoundary()[0][0]}));
-        var xmax = Math.max.apply(Math, pcbs.map(function(pcb) { return pcb.getBoundary()[2][0]}));
-        var ymin = Math.min.apply(Math, pcbs.map(function(pcb) { return pcb.getBoundary()[0][1]}));
-        var ymax = Math.max.apply(Math, pcbs.map(function(pcb) { return pcb.getBoundary()[2][1]}));
+
+        var xlist = [].concat.apply([], pcbs.map(function(pcb){ return pcb.getBoundary().map(function(p){return p[0]}) }));
+        var ylist = [].concat.apply([], pcbs.map(function(pcb){ return pcb.getBoundary().map(function(p){return p[1]}) }));
+
+        var xmin = Math.min.apply(Math, xlist);
+        var xmax = Math.max.apply(Math, xlist);
+        var ymin = Math.min.apply(Math, ylist);
+        var ymax = Math.max.apply(Math, ylist);
+
         var wtarg = EXTRA_FACTOR * (paper.width/window.innerWidth) * (xmax - xmin); // target width
         var htarg = EXTRA_FACTOR * (paper.height/(window.innerHeight - $("#canvas_container").offset().top)) * (ymax - ymin); // target height
         var w0 = paper.viewbox[2]; // current width

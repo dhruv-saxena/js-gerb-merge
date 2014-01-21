@@ -27,9 +27,25 @@
         this.label.attr({x: centre[0], y: centre[1]});
     };
     var mousewheel = function(event, delta) {
-        paper.scale *= delta > 0 ? 0.8 : 1.2;
-        paper.setViewBox(0,0, paper.width * paper.scale, paper.height * paper.scale, false);
-        dd = paper;
+        var posx = event.clientX - $("#canvas_container").offset().left; // mouse position relative to the paper div
+        var posy = event.clientY -  $("#canvas_container").offset().top;
+        var SCALE_FACTOR = 1.25;
+        var scale = delta > 0 ? 1.0/SCALE_FACTOR : SCALE_FACTOR; // relative scale
+        
+        // Original viewbox
+        var x0 = paper.viewbox[0];
+        var y0 = paper.viewbox[1];
+        var w0 = paper.viewbox[2];
+        var h0 = paper.viewbox[3];
+        // new viewbox
+        var x1 = x0 + posx/paper.width * w0 * (1 - scale);
+        var y1 = y0 + posy/paper.height * h0 * (1 - scale);
+        var w1 = w0 * scale;
+        var h1 = h0 * scale;
+        paper.viewbox = [x1, y1, w1, h1];
+        // apply the viewbox
+        paper.scale *= scale;
+        paper.setViewBox.apply(paper, paper.viewbox);
     };
 
     var addPCBtoUI = function(pcb) {
@@ -104,8 +120,12 @@
         fixDownload();
         $("#files").change(handleFileSelect);
 		$("#blob").click(fixDownload);
-        paper = new Raphael('canvas_container', 10000, 5000); // units = mm
+        var w = 10000;
+        var h = 5000;
+        paper = new Raphael('canvas_container', w, h); // units = mm
         paper.scale = 1.0;
+        paper.viewbox = [0, 0, w, h];
+        paper.setViewBox.apply(paper, paper.viewbox);
         $("#canvas_container").bind('mousewheel', mousewheel);
     });
 

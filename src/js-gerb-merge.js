@@ -27,6 +27,18 @@
         this.label.attr({x: centre[0], y: centre[1]});
     };
     var mousewheel = function(event, delta) {
+        // Borrowed : http://kushagragour.in/lab/picssel-art/
+        gridstr = '';
+        for(var i=0;i < 100;i++) {
+            for(var j=0; j < 100; j++) {
+                gridstr += (i*20)+'px '+(j*20)+'px #000,';
+            }
+        }
+        gridstr += '0px 0px #000';
+        $('#grid').css({'box-shadow':gridstr});
+
+        for(var i=0;i < 100;i++) {
+        }
         var posx = event.clientX - $("#canvas_container").offset().left; // mouse position relative to the paper div
         var posy = event.clientY -  $("#canvas_container").offset().top;
         var SCALE_FACTOR = 1.25;
@@ -46,6 +58,7 @@
         // apply the viewbox
         paper.scale *= scale;
         paper.setViewBox.apply(paper, paper.viewbox);
+
     };
     var zoomtofit = function(e) {
         var EXTRA_FACTOR = 1.1;
@@ -146,7 +159,15 @@
         paper = new Raphael('canvas_container', w, h); // units = mm
         paper.scale = 1.0;
         paper.viewbox = [0, 0, w, h];
-        paper.setViewBox.apply(paper, paper.viewbox);
+        
+        gridstr = '<div id="grid" style="width: 1px;height: 1px;box-shadow:';
+        for(var i=0;i < 10;i++) {
+            gridstr += i+'px '+2*i+'px #8b8b8b,';
+        }
+        gridstr += '0px 0px #8b8b8b;"></div>';
+        $('#canvas_container').prepend(gridstr);
+       
+        //$('#canvas_container').prepend('<div style="width: 6px;height: 6px;background: transparent;box-shadow: 42px 108px #8b8b8b,114px 90px #8b8b8b,96px 66px #8b8b8b,96px 60px #8b8b8b,84px 78px #8b8b8b,78px 102px #8b8b8b,48px 42px #8b8b8b,108px 72px #8b8b8b,132px 84px #8b8b8b,126px 126px #8b8b8b,60px 132px #8b8b8b,54px 90px #8b8b8b,66px 60px #8b8b8b,78px 30px #8b8b8b,84px 72px #8b8b8b,102px 120px #8b8b8b,102px 144px #8b8b8b,72px 132px #8b8b8b,114px 24px #8b8b8b,48px 12px #8b8b8b,18px 60px #8b8b8b,18px 108px #8b8b8b,24px 150px #8b8b8b;"></div>');
         $("#canvas_container").bind('mousewheel', mousewheel);
         $("#zoomtofit").bind("click", zoomtofit);
     });

@@ -1,5 +1,5 @@
 (function() {
-    pcbs = [];
+    var pcbs = [];
     var paper, ctx, gridPoint;
     
     var dragstart = function () {
@@ -27,26 +27,27 @@
         this.label.attr({x: centre[0], y: centre[1]});
     };
     var mousewheel = function(event, delta) {
-        var posx = event.clientX - $("#canvas_container").offset().left; // mouse position relative to the paper div
-        var posy = event.clientY -  $("#canvas_container").offset().top;
-        var SCALE_FACTOR = 1.25;
-        var scale = delta > 0 ? 1.0/SCALE_FACTOR : SCALE_FACTOR; // relative scale
+        if(!event.ctrlKey) { // Make sure the user is not zooming the browser. This check was not needed for Chrome.
+            var posx = event.clientX - $("#canvas_container").offset().left; // mouse position relative to the paper div
+            var posy = event.clientY -  $("#canvas_container").offset().top;
+            var SCALE_FACTOR = 1.25;
+            var scale = delta > 0 ? 1.0/SCALE_FACTOR : SCALE_FACTOR; // relative scale
         
-        // Original viewbox
-        var x0 = paper.viewbox[0];
-        var y0 = paper.viewbox[1];
-        var w0 = paper.viewbox[2];
-        var h0 = paper.viewbox[3];
-        // new viewbox
-        var x1 = x0 + posx/paper.width * w0 * (1 - scale);
-        var y1 = y0 + posy/paper.height * h0 * (1 - scale);
-        var w1 = w0 * scale;
-        var h1 = h0 * scale;
-        paper.viewbox = [x1, y1, w1, h1];
-        // apply the viewbox
-        paper.scale *= scale;
-        paper.setViewBox.apply(paper, paper.viewbox);
-
+            // Original viewbox
+            var x0 = paper.viewbox[0];
+            var y0 = paper.viewbox[1];
+            var w0 = paper.viewbox[2];
+            var h0 = paper.viewbox[3];
+            // new viewbox
+            var x1 = x0 + posx/paper.width * w0 * (1 - scale);
+            var y1 = y0 + posy/paper.height * h0 * (1 - scale);
+            var w1 = w0 * scale;
+            var h1 = h0 * scale;
+            paper.viewbox = [x1, y1, w1, h1];
+            // apply the viewbox
+            paper.scale *= scale;
+            paper.setViewBox.apply(paper, paper.viewbox);
+        }
     };
     var zoomtofit = function(e) {
         var EXTRA_FACTOR = 1.1;
@@ -84,9 +85,9 @@
     };
 
     var drawGrid = function() {
-        ctx.clearRect(0, 0, 1000, 1000);
-        for(var x=0; x < 1000; x+=20) {
-            for(var y=0; y < 1000; y+=20) {
+        ctx.clearRect(0, 0, 4000, 4000);
+        for(var x=0; x < 4000; x+=20) {
+            for(var y=0; y < 4000; y+=20) {
                 ctx.putImageData(gridPoint, x, y);
             }
         }

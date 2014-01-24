@@ -11,8 +11,8 @@ body {
     overflow: hidden;
 }
 #c {
-    width: 1000px;
-    height: 1000px;
+    width: 4000px;
+    height: 4000px;
     z-index: -1;
     position: absolute;
 }

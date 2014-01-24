@@ -10,3 +10,9 @@ html, body {
 body {
     overflow: hidden;
 }
+#c {
+    width: 1000px;
+    height: 1000px;
+    z-index: -1;
+    position: absolute;
+}

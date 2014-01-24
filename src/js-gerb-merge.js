@@ -49,8 +49,8 @@ for (var i=0;i<imgData.data.length;i+=4)
   imgData.data[i+2]=0;
   imgData.data[i+3]=255;
   }
-for(var x=0; x < 1000; x+=10) {
-    for(var y=0; y < 1000; y+=10) {
+for(var x=0; x < 1600; x+=20) {
+    for(var y=0; y < 900; y+=20) {
         ctx.putImageData(imgData,x,y);
     }
 }
@@ -186,7 +186,10 @@ for(var x=0; x < 1000; x+=10) {
         gridstr += '0px 0px #8b8b8b;"></div>';
         $('#canvas_container').prepend(gridstr);
        */
-        $('#hi').append('<canvas id="c" width="800" height="300" style="z-index:-1; position:absolute;"></canvas>');
+        $('#grid').append(
+            '<canvas id="c" width="'+screen.width+'" height="'+screen.height
+            +'" style="width:100%;height:100%z-index:-1; position:absolute;"></canvas>'
+        );
 
         //$('#canvas_container').prepend('<div style="width: 6px;height: 6px;background: transparent;box-shadow: 42px 108px #8b8b8b,114px 90px #8b8b8b,96px 66px #8b8b8b,96px 60px #8b8b8b,84px 78px #8b8b8b,78px 102px #8b8b8b,48px 42px #8b8b8b,108px 72px #8b8b8b,132px 84px #8b8b8b,126px 126px #8b8b8b,60px 132px #8b8b8b,54px 90px #8b8b8b,66px 60px #8b8b8b,78px 30px #8b8b8b,84px 72px #8b8b8b,102px 120px #8b8b8b,102px 144px #8b8b8b,72px 132px #8b8b8b,114px 24px #8b8b8b,48px 12px #8b8b8b,18px 60px #8b8b8b,18px 108px #8b8b8b,24px 150px #8b8b8b;"></div>');
         $("#canvas_container").bind('mousewheel', mousewheel);

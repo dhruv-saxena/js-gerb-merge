@@ -1,5 +1,5 @@
 (function() {
-    var pcbs = [];
+    pcbs = [];
     var paper, ctx, gridPoint;
     
     var dragstart = function () {
@@ -80,7 +80,8 @@
         polygon.pcb = pcb;
         polygon.dblclick(rotate);
         var centre = pcb.getTranslatedCentroid();
-        var label = paper.text(centre[0],centre[1],pcb.name); // add PCB name near the left top 
+        var label = paper.text(centre[0],centre[1],pcb.name); // add PCB name 
+        label.attr('font-size',150);
         polygon.label = label;
     };
 
@@ -149,6 +150,10 @@
     }
 
     $(function () {
+        // detect browser
+        if(!(navigator.userAgent.match(/firefox/i) || navigator.userAgent.match(/chrome/i))) {
+            alert('This application works best in Firefox and Chrome web browsers');
+        }
         // prepare to draw grid
         var c = document.getElementById("c");
         ctx = c.getContext("2d");

@@ -13,7 +13,7 @@ var jspcb = (function() {
         var boundary = [ [0,0] , [0,0] , [0,0] , [0,0] ];
 
         // TODO: infer the appropriate scale from the gerber
-        var scale = 250;
+        var scale = 10;
         
         // Boundary detection algorithm. Find the extreme (X,Y) locations marked in the gerber
         var xmin = Number.POSITIVE_INFINITY;

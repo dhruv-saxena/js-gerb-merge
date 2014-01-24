@@ -28,14 +28,33 @@
     };
     var mousewheel = function(event, delta) {
         // Borrowed : http://kushagragour.in/lab/picssel-art/
+        /*
         gridstr = '';
         for(var i=0;i < 100;i++) {
             for(var j=0; j < 100; j++) {
-                gridstr += (i*20)+'px '+(j*20)+'px #000,';
+                gridstr += (i*30)+'px '+(j*30)+'px #000,';
             }
         }
         gridstr += '0px 0px #000';
         $('#grid').css({'box-shadow':gridstr});
+        */
+var c=document.getElementById("c");
+var ctx=c.getContext("2d");
+ctx.clearRect(0, 0, 800, 300);
+var imgData=ctx.createImageData(1,1);
+for (var i=0;i<imgData.data.length;i+=4)
+  {
+  imgData.data[i+0]=0;
+  imgData.data[i+1]=0;
+  imgData.data[i+2]=0;
+  imgData.data[i+3]=255;
+  }
+for(var x=0; x < 1000; x+=10) {
+    for(var y=0; y < 1000; y+=10) {
+        ctx.putImageData(imgData,x,y);
+    }
+}
+
 
         for(var i=0;i < 100;i++) {
         }
@@ -159,14 +178,16 @@
         paper = new Raphael('canvas_container', w, h); // units = mm
         paper.scale = 1.0;
         paper.viewbox = [0, 0, w, h];
-        
+        /*
         gridstr = '<div id="grid" style="width: 1px;height: 1px;box-shadow:';
         for(var i=0;i < 10;i++) {
             gridstr += i+'px '+2*i+'px #8b8b8b,';
         }
         gridstr += '0px 0px #8b8b8b;"></div>';
         $('#canvas_container').prepend(gridstr);
-       
+       */
+        $('#hi').append('<canvas id="c" width="800" height="300" style="z-index:-1; position:absolute;"></canvas>');
+
         //$('#canvas_container').prepend('<div style="width: 6px;height: 6px;background: transparent;box-shadow: 42px 108px #8b8b8b,114px 90px #8b8b8b,96px 66px #8b8b8b,96px 60px #8b8b8b,84px 78px #8b8b8b,78px 102px #8b8b8b,48px 42px #8b8b8b,108px 72px #8b8b8b,132px 84px #8b8b8b,126px 126px #8b8b8b,60px 132px #8b8b8b,54px 90px #8b8b8b,66px 60px #8b8b8b,78px 30px #8b8b8b,84px 72px #8b8b8b,102px 120px #8b8b8b,102px 144px #8b8b8b,72px 132px #8b8b8b,114px 24px #8b8b8b,48px 12px #8b8b8b,18px 60px #8b8b8b,18px 108px #8b8b8b,24px 150px #8b8b8b;"></div>');
         $("#canvas_container").bind('mousewheel', mousewheel);
         $("#zoomtofit").bind("click", zoomtofit);

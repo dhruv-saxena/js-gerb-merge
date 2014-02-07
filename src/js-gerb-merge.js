@@ -2,6 +2,7 @@
     var pcbs = [];
     var paper,grid;
     var MAX_PAPER_SIZE = 1000000; // max width and height of paper in mil
+    var GRID_SIZE = 50; // in mil
     
     var dragstart = function () {
         this.dx_start = this.pcb.dx; // keep record of initial(at the start of drag) PCB offset
@@ -20,12 +21,14 @@
     };
     var dragstop = function () {
         this.attr({stroke: '#ddd'});
+        snapToGrid(this);
     };
     var rotate = function() {
         this.pcb.rotation += 90;
         this.attr({path: 'M'+this.pcb.getBoundary().toString()+'Z'}); // move PCB outline
         var centre = this.pcb.getTranslatedCentroid();
         this.label.attr({x: centre[0], y: centre[1]});
+        snapToGrid(this);
     };
     var mousewheel = function(event, delta) {
         if(!event.ctrlKey) { // Make sure the user is not zooming the browser. This check was not needed for Chrome.
@@ -43,7 +46,6 @@
                 scale = 1;
             }
 
-        
             // Original viewbox
             var x0 = paper.viewbox[0];
             var y0 = paper.viewbox[1];
@@ -59,6 +61,21 @@
             // apply the viewbox
             paper.scale *= scale;
             paper.setViewBox.apply(paper, paper.viewbox);
+        }
+    };
+    var snapToGrid = function(pcbui) {
+        if($('#snap').is(':checked')) {
+            var bb = pcbui.pcb.getBoundary();
+            // say we want to snap at the left top corner
+            var posx = bb[0][0];
+            var posy = bb[0][1];
+
+            var dx = Math.round(posx/GRID_SIZE) * GRID_SIZE - posx;
+            var dy = Math.round(posy/GRID_SIZE) * GRID_SIZE - posy;
+            pcbui.pcb.dx += dx;
+            pcbui.pcb.dy += dy;
+            pcbui.attr({path: 'M'+pcbui.pcb.getBoundary().toString()+'Z'}); // move PCB outline
+            pcbui.label.attr({x: pcbui.label.attr("x") + dx, y: pcbui.label.attr("y") + dy}); // move label
         }
     };
     var zoomtofit = function(e) {
@@ -102,6 +119,8 @@
         var label = paper.text(centre[0],centre[1],pcb.name); // add PCB name 
         label.attr('font-size',150);
         polygon.label = label;
+
+        snapToGrid(polygon);
         zoomtofit();
     };
 

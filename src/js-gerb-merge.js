@@ -54,25 +54,32 @@
         $(r.node).attr("fill","url(#mygrid)");
     }
     var zoomtofit = function(e) {
-        var EXTRA_FACTOR = 1.1;
+        if(pcbs.length > 0) {
+            // check to see if at least one PCB has been added
+            var EXTRA_FACTOR = 1.1;
 
-        var xlist = [].concat.apply([], pcbs.map(function(pcb){ return pcb.getBoundary().map(function(p){return p[0]}) }));
-        var ylist = [].concat.apply([], pcbs.map(function(pcb){ return pcb.getBoundary().map(function(p){return p[1]}) }));
+            var xlist = [].concat.apply([], pcbs.map(function(pcb){ return pcb.getBoundary().map(function(p){return p[0]}) }));
+            var ylist = [].concat.apply([], pcbs.map(function(pcb){ return pcb.getBoundary().map(function(p){return p[1]}) }));
 
-        var xmin = Math.min.apply(Math, xlist);
-        var xmax = Math.max.apply(Math, xlist);
-        var ymin = Math.min.apply(Math, ylist);
-        var ymax = Math.max.apply(Math, ylist);
+            var xmin = Math.min.apply(Math, xlist);
+            var xmax = Math.max.apply(Math, xlist);
+            var ymin = Math.min.apply(Math, ylist);
+            var ymax = Math.max.apply(Math, ylist);
+            
+            // target width and height
+            var wtarg = EXTRA_FACTOR * (paper.width/window.innerWidth) * (xmax - xmin);
+            var htarg = EXTRA_FACTOR * (paper.height/(window.innerHeight - $("#canvas_container").offset().top)) * (ymax - ymin);
 
-        var wtarg = EXTRA_FACTOR * (paper.width/window.innerWidth) * (xmax - xmin); // target width
-        var htarg = EXTRA_FACTOR * (paper.height/(window.innerHeight - $("#canvas_container").offset().top)) * (ymax - ymin); // target height
-        var w0 = paper.viewbox[2]; // current width
-        var h0 = paper.viewbox[3]; // current height
-        var scale = Math.max.apply(Math, [wtarg*1.0/w0, htarg*1.0/h0]); // chose scale while maintaining aspect ratio
-        // new viewbox
-        paper.viewbox = [xmin, ymin, w0 * scale , h0 * scale];
-        paper.scale *= scale;
-        paper.setViewBox.apply(paper, paper.viewbox);
+            // current width and height
+            var w0 = paper.viewbox[2]; 
+            var h0 = paper.viewbox[3]; 
+            var scale = Math.max.apply(Math, [wtarg*1.0/w0, htarg*1.0/h0]); // chose scale while maintaining aspect ratio
+
+            // new viewbox
+            paper.viewbox = [xmin, ymin, w0 * scale , h0 * scale];
+            paper.scale *= scale;
+            paper.setViewBox.apply(paper, paper.viewbox);
+        }
     };
 
     var addPCBtoUI = function(pcb) {

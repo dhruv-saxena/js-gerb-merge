@@ -1,6 +1,6 @@
 (function() {
-    pcbs = [];
-    var paper, ctx, gridPoint;
+    var pcbs = [];
+    var paper,grid;
     
     var dragstart = function () {
         this.dx_start = this.pcb.dx; // keep record of initial(at the start of drag) PCB offset
@@ -49,6 +49,10 @@
             paper.setViewBox.apply(paper, paper.viewbox);
         }
     };
+    var drawGrid = function() {
+        r = paper.rect(0,0,5000,10000);
+        $(r.node).attr("fill","url(#mygrid)");
+    }
     var zoomtofit = function(e) {
         var EXTRA_FACTOR = 1.1;
 
@@ -83,15 +87,6 @@
         var label = paper.text(centre[0],centre[1],pcb.name); // add PCB name 
         label.attr('font-size',150);
         polygon.label = label;
-    };
-
-    var drawGrid = function() {
-        ctx.clearRect(0, 0, 4000, 4000);
-        for(var x=0; x < 4000; x+=20) {
-            for(var y=0; y < 4000; y+=20) {
-                ctx.putImageData(gridPoint, x, y);
-            }
-        }
     };
 
     function fixDownload() {
@@ -154,29 +149,27 @@
         if(!(navigator.userAgent.match(/firefox/i) || navigator.userAgent.match(/chrome/i))) {
             alert('This application works best in Firefox and Chrome web browsers');
         }
-        // prepare to draw grid
-        var c = document.getElementById("c");
-        ctx = c.getContext("2d");
-        gridPoint = ctx.createImageData(1,1);
-        for (var i=0;i<gridPoint.data.length;i+=4)
-        {
-            gridPoint.data[i+0]=0;
-            gridPoint.data[i+1]=0;
-            gridPoint.data[i+2]=0;
-            gridPoint.data[i+3]=255;
-        }
-        // draw grid
-        drawGrid();
+
         // Now, the download link
         fixDownload();
         $("#files").change(handleFileSelect);
 		$("#blob").click(fixDownload);
+
         // Create SVG for the PCBs
         var w = 10000;
         var h = 5000;
         paper = new Raphael('canvas_container', w, h); // units = mm
         paper.scale = 1.0;
         paper.viewbox = [0, 0, w, h];
+
+        // define the grid pattern and include it in the SVG. May not work in old IE which might be using VML !
+        pattern = '<pattern id="mygrid" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M 12 0 L 0 0 0 12" fill="none" stroke="gray" stroke-width="0.5"/></pattern>';
+        pattern = $.parseHTML('<svg>'+pattern+'</svg>')[0].firstChild; //or childNodes
+        $('svg defs').append(pattern);
+
+        grid = paper.rect(0,0,50000,25000);
+        $(grid.node).attr("fill","url(#mygrid)");
+
         $("#canvas_container").bind('mousewheel', mousewheel);
         $("#zoomtofit").bind("click", zoomtofit);
     });

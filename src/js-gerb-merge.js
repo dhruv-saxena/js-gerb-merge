@@ -3,6 +3,8 @@
     var paper,grid;
     var MAX_PAPER_SIZE = 1000000; // max width and height of paper in mil
     var GRID_SIZE = 50; // in mil
+    var mousex = 0;
+    var mousey = 0;
     
     var dragstart = function () {
         this.dx_start = this.pcb.dx; // keep record of initial(at the start of drag) PCB offset
@@ -34,34 +36,46 @@
         if(!event.ctrlKey) { // Make sure the user is not zooming the browser. This check was not needed for Chrome.
             var posx = event.clientX - $("#canvas_container").offset().left; // mouse position relative to the paper div
             var posy = event.clientY -  $("#canvas_container").offset().top;
-            var SCALE_FACTOR = 1.25;
-            
-            var scale = delta > 0 ? 1.0/SCALE_FACTOR : SCALE_FACTOR; // relative scale
-
-            // dont scale at extreme zoom levels
-            if(scale > 1 && paper.scale > 50) {
-                scale = 1; 
-            }
-            if(scale < 1 && paper.scale < 0.1) {
-                scale = 1;
-            }
-
-            // Original viewbox
-            var x0 = paper.viewbox[0];
-            var y0 = paper.viewbox[1];
-            var w0 = paper.viewbox[2];
-            var h0 = paper.viewbox[3];
-            // new viewbox
-            var x1 = x0 + posx/paper.width * w0 * (1 - scale);
-            var y1 = y0 + posy/paper.height * h0 * (1 - scale);
-            var w1 = w0 * scale;
-            var h1 = h0 * scale;
-            
-            paper.viewbox = [x1, y1, w1, h1];
-            // apply the viewbox
-            paper.scale *= scale;
-            paper.setViewBox.apply(paper, paper.viewbox);
+            zoom(posx, posy, delta);
         }
+    };
+    var keypress = function(event) {
+        // character 'z'
+        if(event.which == 122) {
+            zoom(mousex, mousey, 1);
+        }
+        else if(event.which == 120) {
+            zoom(mousex, mousey, -1);
+        }
+    };
+    var zoom = function(posx, posy, delta) {
+        var SCALE_FACTOR = 1.25;    
+        var scale = delta > 0 ? 1.0/SCALE_FACTOR : SCALE_FACTOR; // relative scale
+
+        // dont scale at extreme zoom levels
+        if(scale > 1 && paper.scale > 50) {
+            scale = 1; 
+        }
+        if(scale < 1 && paper.scale < 0.1) {
+            scale = 1;
+        }
+
+        // Original viewbox
+        var x0 = paper.viewbox[0];
+        var y0 = paper.viewbox[1];
+        var w0 = paper.viewbox[2];
+        var h0 = paper.viewbox[3];
+        // new viewbox
+        var x1 = x0 + posx/paper.width * w0 * (1 - scale);
+        var y1 = y0 + posy/paper.height * h0 * (1 - scale);
+        var w1 = w0 * scale;
+        var h1 = h0 * scale;
+            
+        paper.viewbox = [x1, y1, w1, h1];
+        // apply the viewbox
+        paper.scale *= scale;
+        paper.setViewBox.apply(paper, paper.viewbox);
+
     };
     var snapToGrid = function(pcbui) {
         if($('#snap').is(':checked')) {
@@ -207,6 +221,11 @@
 
         $("#canvas_container").bind('mousewheel', mousewheel);
         $("#zoomtofit").bind("click", zoomtofit);
+        $(document).keypress(keypress);
+        $(document).mousemove(function(event) {
+            mousex = event.clientX - $("#canvas_container").offset().left;
+            mousey = event.clientY - $("#canvas_container").offset().top;
+        });
     });
 
 }());

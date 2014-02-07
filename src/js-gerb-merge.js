@@ -158,7 +158,7 @@
         // Create SVG for the PCBs
         var w = 10000;
         var h = 5000;
-        paper = new Raphael('canvas_container', w, h); // units = mm
+        paper = new Raphael('canvas_container', w, h); // units = mil
         paper.scale = 1.0;
         paper.viewbox = [0, 0, w, h];
 
@@ -167,7 +167,7 @@
         pattern = $.parseHTML('<svg>'+pattern+'</svg>')[0].firstChild; //or childNodes
         $('svg defs').append(pattern);
 
-        grid = paper.rect(0,0,50000,25000);
+        grid = paper.rect(-20000, -20000, 40000, 40000); // 1m x 1m, centred at origin
         $(grid.node).attr("fill","url(#mygrid)");
 
         $("#canvas_container").bind('mousewheel', mousewheel);

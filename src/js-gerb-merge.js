@@ -56,7 +56,7 @@
         if(scale > 1 && paper.scale > 50) {
             scale = 1; 
         }
-        if(scale < 1 && paper.scale < 0.1) {
+        if(scale < 1 && paper.scale < 0.5) {
             scale = 1;
         }
 

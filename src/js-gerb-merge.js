@@ -1,6 +1,7 @@
 (function() {
     var pcbs = [];
     var paper,grid;
+    var MAX_PAPER_SIZE = 1000000; // max width and height of paper in mil
     
     var dragstart = function () {
         this.dx_start = this.pcb.dx; // keep record of initial(at the start of drag) PCB offset
@@ -31,7 +32,17 @@
             var posx = event.clientX - $("#canvas_container").offset().left; // mouse position relative to the paper div
             var posy = event.clientY -  $("#canvas_container").offset().top;
             var SCALE_FACTOR = 1.25;
+            
             var scale = delta > 0 ? 1.0/SCALE_FACTOR : SCALE_FACTOR; // relative scale
+
+            // dont scale at extreme zoom levels
+            if(scale > 1 && paper.scale > 50) {
+                scale = 1; 
+            }
+            if(scale < 1 && paper.scale < 0.1) {
+                scale = 1;
+            }
+
         
             // Original viewbox
             var x0 = paper.viewbox[0];
@@ -43,16 +54,13 @@
             var y1 = y0 + posy/paper.height * h0 * (1 - scale);
             var w1 = w0 * scale;
             var h1 = h0 * scale;
+            
             paper.viewbox = [x1, y1, w1, h1];
             // apply the viewbox
             paper.scale *= scale;
             paper.setViewBox.apply(paper, paper.viewbox);
         }
     };
-    var drawGrid = function() {
-        r = paper.rect(0,0,5000,10000);
-        $(r.node).attr("fill","url(#mygrid)");
-    }
     var zoomtofit = function(e) {
         if(pcbs.length > 0) {
             // check to see if at least one PCB has been added
@@ -94,6 +102,7 @@
         var label = paper.text(centre[0],centre[1],pcb.name); // add PCB name 
         label.attr('font-size',150);
         polygon.label = label;
+        zoomtofit();
     };
 
     function fixDownload() {
@@ -163,18 +172,18 @@
 		$("#blob").click(fixDownload);
 
         // Create SVG for the PCBs
-        var w = 10000;
-        var h = 5000;
+        var w = 25*window.innerWidth; // the factor 25 makes sure that the paper extends to the edge of the window even when zoomed
+        var h = 25*window.innerHeight;
         paper = new Raphael('canvas_container', w, h); // units = mil
         paper.scale = 1.0;
         paper.viewbox = [0, 0, w, h];
 
         // define the grid pattern and include it in the SVG. May not work in old IE which might be using VML !
-        pattern = '<pattern id="mygrid" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M 12 0 L 0 0 0 12" fill="none" stroke="gray" stroke-width="0.5"/></pattern>';
+        pattern = '<pattern id="mygrid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="gray" stroke-width="0.5"/></pattern>';
         pattern = $.parseHTML('<svg>'+pattern+'</svg>')[0].firstChild; //or childNodes
         $('svg defs').append(pattern);
 
-        grid = paper.rect(-20000, -20000, 40000, 40000); // 1m x 1m, centred at origin
+        grid = paper.rect(-MAX_PAPER_SIZE * 0.5, -MAX_PAPER_SIZE * 0.5,  MAX_PAPER_SIZE,  MAX_PAPER_SIZE); // 1m x 1m, centred at origin
         $(grid.node).attr("fill","url(#mygrid)");
 
         $("#canvas_container").bind('mousewheel', mousewheel);

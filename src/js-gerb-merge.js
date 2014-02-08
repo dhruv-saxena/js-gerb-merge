@@ -169,6 +169,7 @@
             gerbs.push(gerber);
             if(nFilesRead == files.length) {
                 // all gerbers read, now construct PCB
+                $("#files").val(""); // reset the file input form so that the same set of gerbers can be added again to make a duplicate PCB
                 try {
                     var pcb = new jspcb.PCB(gerbs);
                     pcbs.push(pcb);

@@ -12,39 +12,58 @@ var jspcb = (function() {
         // boundary should be a list of vertices that describes the boundary as in the gerber
         var boundary = [ [0,0] , [0,0] , [0,0] , [0,0] ];
 
-        // TODO: infer the appropriate scale from the gerber
-        var scale = 10;
-        
         // Boundary detection algorithm. Find the extreme (X,Y) locations marked in the gerber
         var xmin = Number.POSITIVE_INFINITY;
         var ymin = Number.POSITIVE_INFINITY;
         var xmax = Number.NEGATIVE_INFINITY;
         var ymax = Number.NEGATIVE_INFINITY;
-        var re = /^X(-?\d+)Y(-?\d+)/;
         for(var i=0; i < gerbs.length; i++) {
             var str = gerbs[i][1];
-            var lines = str.split('\n');
-            for(var j=0; j < lines.length; j++) {
-                var m = re.exec(lines[j]);
+            var unitscale = 1000; // one inch = 1000 mils
+            dd = str;
+            if( /momm/i.exec(str) || /moin/i.exec(str) ) {
+                if(/momm/i.exec(str)) {
+                    unitscale *= 0.0393701; // 1 mm = 0.03937 in. This file has dimensions in mm
+                }
+
+                var m = /FSLAX(\d)(\d)/i.exec(str);
                 if(m) {
-                    var x = Number(m[1]);
-                    var y = Number(m[2]);
-                    if(x < xmin) {
-                        xmin = x;
+                    var re = /^X(-?\d+)Y(-?\d+)/;
+                    unitscale *= Math.pow(10, -1 * Number(m[2]));
+                    var lines = str.split('\n');
+                    for(var j=0; j < lines.length; j++) {
+                        var m = re.exec(lines[j]);
+                        if(m) {
+                            var x = Number(m[1]) * unitscale;
+                            var y = Number(m[2]) * unitscale;
+                            if(x < xmin) {
+                                xmin = x;
+                            }
+                            if(x > xmax) {
+                                xmax = x;
+                            }
+                            if(y < ymin) {
+                                ymin = y;
+                            }
+                            if(y > ymax) {
+                                ymax = y;
+                            }
+                        }
                     }
-                    if(x > xmax) {
-                        xmax = x;
-                    }
-                    if(y < ymin) {
-                        ymin = y;
-                    }
-                    if(y > ymax) {
-                        ymax = y;
-                    }
+
+                }
+                else {
+                    alert("Unrecognized gerber");
                 }
             }
+            else if( /^M48/i.exec(str) ){
+                // drill file. For now this is ignored
+            }
+            else {
+                alert("Unrecognized file");
+            }
         }
-        boundary = [ [xmin/scale,ymin/scale] , [xmax/scale,ymin/scale], [xmax/scale,ymax/scale], [xmin/scale,ymax/scale] ];
+        boundary = [ [xmin,ymin] , [xmax,ymin], [xmax,ymax], [xmin,ymax] ];
         
         // get it into the display
         if(boundary[0][0] < 0) {
@@ -72,8 +91,8 @@ var jspcb = (function() {
             // TODO: Rotation. Currently doing only translation
             var newgerbs = [];
 
-            var tx = (this.dx-origdx) * scale;
-            var ty = (this.dy-origdy) * scale;
+            var tx = (this.dx-origdx);
+            var ty = (this.dy-origdy);
 
             for(var i=0;i < gerbs.length; i++) {
                 newgerbs[i] = ['d.txt',''];

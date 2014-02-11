@@ -20,22 +20,68 @@ var jspcb = (function() {
         for(var i=0; i < gerbs.length; i++) {
             var str = gerbs[i][1];
             var unitscale = 1000; // one inch = 1000 mils
-            dd = str;
             if( /momm/i.exec(str) || /moin/i.exec(str) ) {
                 if(/momm/i.exec(str)) {
                     unitscale *= 0.0393701; // 1 mm = 0.03937 in. This file has dimensions in mm
                 }
-
+                var lastx, lasty;
                 var m = /FSLAX(\d)(\d)/i.exec(str);
                 if(m) {
-                    var re = /^X(-?\d+)Y(-?\d+)/;
                     unitscale *= Math.pow(10, -1 * Number(m[2]));
                     var lines = str.split('\n');
                     for(var j=0; j < lines.length; j++) {
-                        var m = re.exec(lines[j]);
+                        var m = /^G(\d+)X(-?\d+)Y(-?\d+)I(-?\d+)J(-?\d+)/i.exec(lines[j]);
+                        if(m && (m[1] == 3 || m[1] == 2)) {
+                            var dir = (m[1] == 3) ? 1 : -1; // clockwise or anti-clockwise arc
+                            var sx = lastx; // start point
+                            var sy = lasty;
+                            var I = Number(m[4]) * unitscale; // distance between start and centre
+                            var J = Number(m[5]) * unitscale;
+                            var r = Math.sqrt(I*I + J*J); // radius of arc
+                            var ex = Number(m[2]) * unitscale; // end of arc
+                            var ey = Number(m[3]) * unitscale;
+                            var cx = sx + I; // centre of arc
+                            var cy = sy + J;
+                            
+                            // slope of the chord with direction
+                            var fullcircle = false;
+                            if(sx == ex && sy == ey) {
+                                // full circle case
+                                fullcircle = true;
+                            }
+                            var orienttest = function(tx, ty) {
+                                return ( dir*((sx-tx)*(ey-ty) - (ex-tx)*(sy-ty)) < 0);
+                            };
+                           
+                            // check if (minx,cy) is covered by the arc
+                            var minx = cx - r;
+                            if(minx < xmin && ( fullcircle || orienttest(minx,cy) )) {
+                                xmin = minx;
+                            }
+                            // check if (maxx,cy) is covered by the arc
+                            var maxx = cx + r;
+                            if(maxx > xmax && ( fullcircle || orienttest(maxx,cy) )) {
+                                xmax = maxx;
+                            }
+                            // check if (cx,miny) is covered by the arc
+                            var miny = cy - r;
+                            if(miny < ymin && ( fullcircle || orienttest(cx,miny) )) {
+                                ymin = miny;
+                            }
+                            // check if (cx,maxy) is covered by the arc
+                            var maxy = cy + r;
+                            if(maxy > ymax && ( fullcircle || orienttest(cx,maxy) )) {
+                                ymax = maxy;
+                            }
+
+                            lastx = ex;
+                            lasty = ey;
+                        }
+                        var m =  /^X(-?\d+)Y(-?\d+)/i.exec(lines[j]);
                         if(m) {
                             var x = Number(m[1]) * unitscale;
                             var y = Number(m[2]) * unitscale;
+
                             if(x < xmin) {
                                 xmin = x;
                             }
@@ -48,6 +94,8 @@ var jspcb = (function() {
                             if(y > ymax) {
                                 ymax = y;
                             }
+                            lastx = x;
+                            lasty = y;
                         }
                     }
 

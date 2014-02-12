@@ -6,8 +6,8 @@ var jspcb = (function() {
         var gerbs = gerbers;
 
         // give some random initial offset to reduce the chances of all the pcbs co-inciding
-        this.dx = Math.floor(Math.random()*50);
-        this.dy = Math.floor(Math.random()*50);
+        this.dx = 0;
+        this.dy = 0;
 
         // boundary should be a list of vertices that describes the boundary as in the gerber
         var boundary = [ [0,0] , [0,0] , [0,0] , [0,0] ];
@@ -113,20 +113,11 @@ var jspcb = (function() {
         }
         boundary = [ [xmin,ymin] , [xmax,ymin], [xmax,ymax], [xmin,ymax] ];
         
-        // get it into the display
-        if(boundary[0][0] < 0) {
-            this.dx += -boundary[0][0];
-        }
-        if(boundary[0][1] < 0) {
-            this.dy += -boundary[0][1];
-        }
-
+       
         var arr = []; // pre-prepping an array for boundary seems to give a small speedup
         for(var i=0;i<boundary.length;i++) {
             arr[i] = [0,0];
         }
-        var origdx = this.dx;
-        var origdy = this.dy;
         
                 
         // TODO: use some heuristic to get PCB name from the gerbers
@@ -139,25 +130,46 @@ var jspcb = (function() {
             // TODO: Rotation. Currently doing only translation
             var newgerbs = [];
 
-            var tx = (this.dx-origdx);
-            var ty = (this.dy-origdy);
-
+            var tx = this.dx;
+            var ty = this.dy;
             for(var i=0;i < gerbs.length; i++) {
-                newgerbs[i] = ['d.txt',''];
+                newgerbs[i] = ['', ''];
                 newgerbs[i][0] = gerbs[i][0]; // keep the same file name
                 var content = gerbs[i][1];
-                var lines = content.split('\n');
-                for(var j=0; j < lines.length; j++) {
-                    var opline = lines[j];
-                    var m = re.exec(opline);
-                    if(m) {
-                        // We have a (X,Y) here. Translate it by modifying opline
-                        var newx = String(Number(m[1]) + tx);
-                        var newy = String(Number(m[2]) + ty);
-                        var repl = 'X'+newx+'Y'+newy;
-                        opline = opline.replace(re,repl);
+
+                var unitscale = 1000; // one inch = 1000 mils
+                if( /momm/i.exec(content) || /moin/i.exec(content) ) {
+                    if(/momm/i.exec(content)) {
+                        unitscale *= 0.0393701; // 1 mm = 0.03937 in. This file has dimensions in mm
                     }
-                    newgerbs[i][1] += opline + '\n';
+                    var m = /FSLAX(\d)(\d)/i.exec(str);
+                    if(m) {
+                        unitscale *= Math.pow(10, -1 * Number(m[2]));
+                        var lines = content.split('\n');
+                        for(var j=0; j < lines.length; j++) {
+                            var opline = lines[j];
+                            var m = /^X(-?\d+)Y(-?\d+)/i.exec(opline);
+                            if(m) {
+                                // We have a (X,Y) here. Translate it by modifying opline
+                                var newx = String(Math.round(Number(m[1]) + tx/unitscale));
+                                var newy = String(Math.round(Number(m[2]) - ty/unitscale));
+                                var repl = 'X'+newx+'Y'+newy;
+                                opline = opline.replace(/^X(-?\d+)Y(-?\d+)/i,repl);
+                            }
+                            var m = /^G03X(-?\d+)Y(-?\d+)/i.exec(opline);
+                            if(m) {
+                                // We have a (X,Y) here. Translate it by modifying opline
+                                var newx = String(Math.round(Number(m[1]) + tx/unitscale));
+                                var newy = String(Math.round(Number(m[2]) - ty/unitscale));
+                                var repl = 'G03X'+newx+'Y'+newy;
+                                opline = opline.replace(/^G03X(-?\d+)Y(-?\d+)/i,repl);
+                            }
+                            newgerbs[i][1] += opline + '\n';
+                        }
+                    }
+                }
+                else {
+                    newgerbs[i][1] = content; // cannot translate, so feed-through
                 }
             }
             return newgerbs;
